@@ -1,0 +1,8 @@
+[submodule "BnsDatafilePlugin_Template/deps/BnsPluginTables"]
+	path = BnsDatafilePlugin_Template/deps/BnsPluginTables
+	url = https://github.com/leanleon93/BnsPluginTables
+	branch = main
+[submodule "BnsDatafilePlugin_Template/deps/DatafilePluginSdk"]
+	path = BnsDatafilePlugin_Template/deps/DatafilePluginSdk
+	url = https://github.com/leanleon93/BnsPlugin_DatafilePluginloader
+	branch = minimal-sdk-headers
