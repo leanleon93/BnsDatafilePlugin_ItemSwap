@@ -76,9 +76,9 @@ jobs:
 
       - name: Update PLUGIN_VERSION in plugin_version.h
         run: |
-          sed -i "s/#define PLUGIN_VERSION \"[0-9.]*\"/#define PLUGIN_VERSION \"${{ steps.get_version.outputs.new_version }}\"/" BnsDatafilePlugin_Template/plugin_version.h
+          sed -i "s/#define PLUGIN_VERSION \"[0-9.]*\"/#define PLUGIN_VERSION \"${{ steps.get_version.outputs.new_version }}\"/" BnsDatafilePlugin_ItemSwap/plugin_version.h
           echo "=== plugin_version.h after edit ==="
-          cat BnsDatafilePlugin_Template/plugin_version.h
+          cat BnsDatafilePlugin_ItemSwap/plugin_version.h
         shell: bash
 
       - name: Add MSBuild to PATH
@@ -91,7 +91,7 @@ jobs:
       - name: Verify DLL built
         id: verify_dll
         run: |
-          if [ ! -f "bin/BnsDatafilePlugin_Template/ReleaseEUX64/ItemSwap.dll" ]; then
+          if [ ! -f "bin/BnsDatafilePlugin_ItemSwap/ReleaseEUX64/ItemSwap.dll" ]; then
             echo "DLL not found! Build failed or wrong path."
             exit 1
           fi
@@ -99,7 +99,7 @@ jobs:
 
       - name: Commit, tag, and push version bump
         run: |
-          git add BnsDatafilePlugin_Template/plugin_version.h
+          git add BnsDatafilePlugin_ItemSwap/plugin_version.h
           git commit -m "Bump PLUGIN_VERSION to ${{ steps.get_version.outputs.new_version }}"
           git tag ${{ steps.get_version.outputs.new_tag }}
           git push
@@ -108,7 +108,7 @@ jobs:
 
       - name: Set DLL path output
         id: find_dll
-        run: echo "dll_path=bin/BnsDatafilePlugin_Template/ReleaseEUX64/ItemSwap.dll" >> $GITHUB_OUTPUT
+        run: echo "dll_path=bin/BnsDatafilePlugin_ItemSwap/ReleaseEUX64/ItemSwap.dll" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Generate release notes
