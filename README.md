@@ -2,7 +2,11 @@
 
 A plugin for BNS NEO that allows you to intercept and modify item data lookups using ImGui for configuration.
 
-## 🚀 Features
+## Features
 
 - **Item Swapping**: Swap item data lookups dynamically
 - **ImGui Integration**: Built-in UI panels for plugin configuration and item browsing
+
+## Demo
+
+[![Watch the demo](https://img.youtube.com/vi/FNsMJbJlf4A/hqdefault.jpg)](https://www.youtube.com/watch?v=FNsMJbJlf4A)
