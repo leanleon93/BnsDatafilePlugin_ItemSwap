@@ -1,9 +1,13 @@
-#include "DatafilePluginsdk.h"
+﻿#include "DatafilePluginsdk.h"
 #include <EU/item/AAA_item_RecordBase.h>
+#include <EU/item/item_costume_Record.h>
 #include <EU/text/AAA_text_RecordBase.h>
+#include <EU/icontexture/AAA_icontexture_RecordBase.h>
 #include <EU/BnsTableNames.h>
 #include <KR/item/AAA_item_RecordBase.h>
+#include <KR/item/item_costume_Record.h>
 #include <KR/text/AAA_text_RecordBase.h>
+#include <KR/icontexture/AAA_icontexture_RecordBase.h>
 #include <KR/BnsTableNames.h>
 #include "plugin_version.h"
 #include "PluginConfig.hpp"
@@ -34,6 +38,17 @@ static DrEl* (__fastcall* g_oFind)(DrMultiKeyTable* thisptr, unsigned __int64 ke
 /// @brief Name of the plugin, used for identification and UI.
 const char* g_pluginName = "ItemSwap";
 
+//zulia special
+static constexpr const wchar_t* eeFemaleMesh = L"/Game/neo_art/art/character/cloth/65071-금각은각조종자/jinf/mesh/65071_jinf.65071_jinf";
+static constexpr const wchar_t* eeFemaleCol1 = L"/Game/neo_art/art/character/cloth/65071-금각은각조종자/jinf/col1/col1.col1";
+static constexpr const wchar_t* eeFemaleCol2 = L"";
+static unsigned long long eeIconTextureId = 0;
+#ifdef _BNSEU
+static BnsTables::EU::item_costume_Record* eeCopy = nullptr;
+#elif _BNSKR
+static BnsTables::KR::item_costume_Record* eeCopy = nullptr;
+#endif
+
 static PluginReturnData __fastcall ItemDetour(PluginExecuteParams* params) {
 #ifdef _BNSEU
 	PLUGIN_DETOUR_GUARD(params, BnsTables::EU::TableNames::GetTableVersion);
@@ -41,8 +56,6 @@ static PluginReturnData __fastcall ItemDetour(PluginExecuteParams* params) {
 	PLUGIN_DETOUR_GUARD(params, BnsTables::KR::TableNames::GetTableVersion);
 #endif
 	if (!g_PluginConfig->ItemSwapConfig.GlobalEnabled) return {};
-	const auto swapMap = g_PluginConfig->ItemSwapConfig.GetEnabledSwapMap();
-	if (swapMap.empty()) return {};
 #ifdef _BNSKR
 	BnsTables::KR::item_Record::Key currentKey{};
 	currentKey.key = params->key;
@@ -50,10 +63,34 @@ static PluginReturnData __fastcall ItemDetour(PluginExecuteParams* params) {
 	BnsTables::EU::item_Record::Key currentKey{};
 	currentKey.key = params->key;
 #endif // _BNSKR
+	const auto swapMap = g_PluginConfig->ItemSwapConfig.GetEnabledSwapMap();
+	if (swapMap.empty()) return {};
 	auto it = swapMap.find(currentKey.id);
 	if (it != swapMap.end()) {
 		currentKey.id = it->second;
 		currentKey.level = 1;
+		if (currentKey.id == 69696969) { //do you like zulia?
+			if (eeCopy == nullptr) {
+#ifdef _BNSEU
+				auto record = (BnsTables::EU::item_costume_Record*)params->oFind(params->table, params->key);
+#elif _BNSKR
+				auto record = (BnsTables::KR::item_costume_Record*)params->oFind(params->table, params->key);
+#endif
+				if (record != nullptr) {
+#ifdef _BNSEU
+					eeCopy = new BnsTables::EU::item_costume_Record(*record);
+#elif _BNSKR
+					eeCopy = new BnsTables::KR::item_costume_Record(*record);
+#endif
+					eeCopy->jin_female_mesh = const_cast<wchar_t*>(eeFemaleMesh);
+					eeCopy->jin_female_mesh_col[0] = const_cast<wchar_t*>(eeFemaleCol1);
+					eeCopy->jin_female_mesh_col[1] = const_cast<wchar_t*>(eeFemaleCol2);
+					eeCopy->item_grade = 9;
+					eeCopy->icon.IcontextureId = eeIconTextureId;
+				}
+			}
+			return { (DrEl*)eeCopy };
+		}
 		auto recordBase = params->oFind(params->table, currentKey.key);
 		if (recordBase != nullptr) {
 			return { recordBase };
@@ -314,6 +351,22 @@ static void ItemSwapConfigUi(void* userData) {
 	ItemBrowserUi(nullptr);
 }
 
+static void SetupEE() {
+	if (g_dataManager == nullptr || g_oFind == nullptr) return;
+#ifdef _BNSEU
+	ForEachRecord<BnsTables::EU::icontexture_Record>(g_dataManager, L"icontexture", [&](BnsTables::EU::icontexture_Record* record, size_t) {
+#elif _BNSKR
+	ForEachRecord<BnsTables::KR::icontexture_Record>(g_dataManager, L"icontexture", [&](BnsTables::KR::icontexture_Record* record, size_t) {
+#endif
+		if (record == nullptr) return true;
+		if (record->alias && wcscmp(record->alias, L"Costume_65071_JinF_col1") == 0) {
+			eeIconTextureId = record->key.key;
+			return false; //stop iteration
+		}
+		return true; // continue iteration
+		});
+}
+
 /**
  * @brief Initializes the plugin and registers the ImGui panel.
  *
@@ -333,6 +386,7 @@ static void __fastcall Init(PluginInitParams * params) {
 	if (params && params->dataManager && params->oFind) {
 		g_dataManager = params->dataManager;
 		g_oFind = params->oFind;
+		SetupEE();
 	}
 	g_PluginConfig = std::make_unique<PluginConfig>();
 }

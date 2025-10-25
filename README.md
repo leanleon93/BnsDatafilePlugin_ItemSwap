@@ -7,6 +7,10 @@ A plugin for BNS NEO that allows you to intercept and modify item data lookups u
 - **Item Swapping**: Swap item data lookups dynamically
 - **ImGui Integration**: Built-in UI panels for plugin configuration and item browsing
 
+## Example outfit swap
+<img src="example.png" alt="Example Image" width="600">
+
+
 ## Demo
 [![Watch the demo](https://img.youtube.com/vi/FNsMJbJlf4A/hqdefault.jpg)](https://www.youtube.com/watch?v=FNsMJbJlf4A)
 
