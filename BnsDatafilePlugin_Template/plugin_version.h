@@ -1,3 +1,3 @@
 #ifndef PLUGIN_VERSION
-#define PLUGIN_VERSION "1.1.44"
+#define PLUGIN_VERSION "1.1.45"
 #endif
