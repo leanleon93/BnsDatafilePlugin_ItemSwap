@@ -1,5 +1,9 @@
 # BNS ItemSwap Plugin
 
+# Disclaimer
+
+**This version of the project is no longer maintained.** Please use the new repository instead: [BnsDatafilePlugin_ItemSwap2](https://github.com/leanleon93/BnsDatafilePlugin_ItemSwap2).
+
 A plugin for BNS NEO that allows you to intercept and modify item data lookups using ImGui for configuration.
 
 ## Features
